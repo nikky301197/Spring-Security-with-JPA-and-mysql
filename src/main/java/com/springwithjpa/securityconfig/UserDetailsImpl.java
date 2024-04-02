@@ -9,11 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.springwithjpa.entities.User;
 
-public class CustomUserDetails implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
 	private User user;
 
-	public CustomUserDetails(User user) {
+	public UserDetailsImpl(User user) {
 		super();
 		this.user = user;
 	}
@@ -28,13 +28,13 @@ public class CustomUserDetails implements UserDetails {
 	@Override
 	public String getPassword() {
 		// TODO Auto-generated method stub
-		return user.getUsername();
+		return user.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
 		// TODO Auto-generated method stub
-		return user.getPassword();
+		return user.getUsername();
 	}
 
 	@Override

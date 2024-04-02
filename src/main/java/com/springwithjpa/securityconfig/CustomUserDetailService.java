@@ -28,7 +28,7 @@ public class CustomUserDetailService implements UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException("user not found with user name " + username));
 		System.out.println(user);
 
-		return new CustomUserDetails(user);
+		return new UserDetailsImpl(user);
 	}
 
 }

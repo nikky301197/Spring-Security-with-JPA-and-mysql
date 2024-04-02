@@ -9,8 +9,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +21,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @Configuration
@@ -27,7 +30,16 @@ public class SpringSecurityConfig {
 	@Autowired
 	private CustomUserDetailService customUserDetailService;
 
+	@Autowired
+	JwtFilter jwtFilter;
+	
 	AuthenticationManager auth;
+	
+	 @Bean
+	    public AuthenticationManager authenticationManager(AuthenticationConfiguration builder) throws Exception {
+	        return builder.getAuthenticationManager();
+	    }
+	
 //	@Bean
 //	InMemoryUserDetailsManager setupUser() {
 //		UserDetails user1 = User.withUsername("nikita").password("nikita").roles("USER").build();
@@ -52,7 +64,7 @@ public class SpringSecurityConfig {
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
-		return  new BCryptPasswordEncoder();
+		return new BCryptPasswordEncoder();
 	}
 
 	@Bean
@@ -61,8 +73,12 @@ public class SpringSecurityConfig {
 			customizer.requestMatchers(HttpMethod.POST, "/admin/add").hasRole("ADMIN");
 			customizer.requestMatchers(HttpMethod.GET, "/user/*").hasAnyRole("ADMIN", "USER");
 			customizer.requestMatchers(HttpMethod.GET, "/welcome").permitAll();
+			customizer.requestMatchers(HttpMethod.POST, "/login").permitAll();
 			customizer.anyRequest().permitAll();
-		}).formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults());
+		}).formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults())
+				.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 		return http.build();
 
 	}

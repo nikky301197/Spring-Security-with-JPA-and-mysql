@@ -21,7 +21,8 @@ public class UserDetailsImpl implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
-		return user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getRoleName()))
+		
+		return user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getRoleName().toUpperCase()))
 				.collect(Collectors.toList());
 	}
 

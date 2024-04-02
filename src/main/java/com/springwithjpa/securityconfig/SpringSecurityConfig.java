@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Authentication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -55,13 +57,15 @@ public class SpringSecurityConfig {
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests(customizer -> {
-			customizer.requestMatchers("/get").hasAnyRole("ADMIN", "USER");
-			customizer.requestMatchers("/update").hasRole("ADMIN");
-			customizer.requestMatchers("/welcome").permitAll();
+		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(customizer -> {
+			customizer.requestMatchers(HttpMethod.POST, "/add").hasRole("ADMIN");
+			customizer.requestMatchers(HttpMethod.GET, "/get", "/update", "/admin").hasAnyRole("ADMIN", "USER");
+			customizer.requestMatchers(HttpMethod.GET, "/welcome").permitAll();
+			customizer.anyRequest().permitAll();
 		}).formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults());
-
 		return http.build();
+
+
 	}
 
 }

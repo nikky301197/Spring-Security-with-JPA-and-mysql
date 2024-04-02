@@ -52,19 +52,18 @@ public class SpringSecurityConfig {
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
-		return NoOpPasswordEncoder.getInstance();
+		return  new BCryptPasswordEncoder();
 	}
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(customizer -> {
-			customizer.requestMatchers(HttpMethod.POST, "/add").hasRole("ADMIN");
-			customizer.requestMatchers(HttpMethod.GET, "/get", "/update", "/admin").hasAnyRole("ADMIN", "USER");
+			customizer.requestMatchers(HttpMethod.POST, "/admin/add").hasRole("ADMIN");
+			customizer.requestMatchers(HttpMethod.GET, "/user/*").hasAnyRole("ADMIN", "USER");
 			customizer.requestMatchers(HttpMethod.GET, "/welcome").permitAll();
 			customizer.anyRequest().permitAll();
 		}).formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults());
 		return http.build();
-
 
 	}
 

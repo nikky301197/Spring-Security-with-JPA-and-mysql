@@ -2,6 +2,10 @@ package com.springwithjpa.entities;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,6 +31,7 @@ public class User {
 	@Id
 	private String username;
 	@Nonnull
+	@JsonIgnoreProperties
 	private String password;
 //	@Nonnull
 //	private boolean Enabled;

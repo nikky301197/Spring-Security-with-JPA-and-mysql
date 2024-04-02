@@ -11,14 +11,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springwithjpa.entities.User;
+import com.springwithjpa.repositories.RoleRepo;
 import com.springwithjpa.repositories.UserRepo;
 
 @RestController
-//@RequestMapping("/admin")
+@RequestMapping("/admin")
 public class AdminController {
 
 	@Autowired
 	UserRepo userrepo;
+
+	@Autowired
+	RoleRepo rolerepo;
 
 	@Autowired
 	PasswordEncoder bcryptpassEncoder;
@@ -28,14 +32,13 @@ public class AdminController {
 
 		String ecryptedPassword = bcryptpassEncoder.encode(user.getPassword());
 		user.setPassword(ecryptedPassword);
+
 		User newUser = userrepo.save(user);
 		return new ResponseEntity<>(newUser, HttpStatus.CREATED);
 	}
-	
-	
-	@GetMapping("/admin")
-	String welcomeAdmin()
-	{
+
+	@GetMapping("/welcome")
+	String welcomeAdmin() {
 		return "Admin dashboard";
 	}
 
